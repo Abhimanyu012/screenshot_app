@@ -19,7 +19,7 @@
   "homepage": "https://github.com/Abhimanyu012/screenshot_app#readme",
   "dependencies": {
     "express": "^5.1.0",
-    "puppeteer": "^24.9.0"
+    "playwright": "^1.52.0"
   },
   "description": ""
 }

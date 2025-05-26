@@ -1,6 +1,6 @@
 const express = require('express');
 const path = require('path');
-const puppeteer = require('puppeteer');
+const { chromium } = require('playwright');
 const fs = require('fs');
 
 const app = express();
@@ -9,15 +9,14 @@ const PORT = process.env.PORT || 3000;
 // Serve static frontend files
 app.use(express.static(path.join(__dirname)));
 
-// Screenshot endpoint
+// Screenshot endpoint using Playwright
 app.get('/screenshot', async (req, res) => {
   const url = `http://localhost:${PORT}`;
   let browser;
   try {
-    browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+    browser = await chromium.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
     const page = await browser.newPage();
-    await page.goto(url, { waitUntil: 'networkidle0' });
-    // Only screenshot the infographic container
+    await page.goto(url, { waitUntil: 'networkidle' });
     const element = await page.$('.infographic-container');
     let screenshotBuffer;
     if (element) {
@@ -29,6 +28,7 @@ app.get('/screenshot', async (req, res) => {
     res.setHeader('Content-Disposition', 'attachment; filename="infographic-screenshot.png"');
     res.send(screenshotBuffer);
   } catch (err) {
+    console.error('Screenshot error:', err); // Log full error to console
     res.status(500).send('Failed to take screenshot: ' + err.message);
   } finally {
     if (browser) await browser.close();
