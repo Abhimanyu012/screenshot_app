@@ -1,6 +1,7 @@
 node_modules/
 .env
 *.log
+.screenshot-cache/
+.screenshot_tmp/
 .DS_Store
-*.env
-npm-debug.log
+*.png

@@ -1,33 +1,40 @@
 const express = require('express');
-const axios = require('axios');
-const cors = require('cors');
 const path = require('path');
-const app = express();
-const PORT = 3001;
+const puppeteer = require('puppeteer');
+const fs = require('fs');
 
-app.use(cors());
-app.use(express.json());
+const app = express();
+const PORT = process.env.PORT || 3000;
 
 // Serve static frontend files
 app.use(express.static(path.join(__dirname)));
 
-// POST /screenshot { url: "https://example.com" }
-app.post('/screenshot', async (req, res) => {
-    const { url } = req.body;
-    if (!url) {
-        return res.status(400).json({ error: 'URL is required' });
+// Screenshot endpoint
+app.get('/screenshot', async (req, res) => {
+  const url = `http://localhost:${PORT}`;
+  let browser;
+  try {
+    browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+    const page = await browser.newPage();
+    await page.goto(url, { waitUntil: 'networkidle0' });
+    // Only screenshot the infographic container
+    const element = await page.$('.infographic-container');
+    let screenshotBuffer;
+    if (element) {
+      screenshotBuffer = await element.screenshot({ type: 'png' });
+    } else {
+      screenshotBuffer = await page.screenshot({ type: 'png', fullPage: true });
     }
-    try {
-        // Using ScreenshotAPI.net demo endpoint (no API key required for demo)
-        const apiUrl = `https://shot.screenshotapi.net/screenshot?token=demo&url=${encodeURIComponent(url)}&output=image&file_type=png`;
-        const response = await axios.get(apiUrl, { responseType: 'arraybuffer' });
-        res.set('Content-Type', 'image/png');
-        res.send(response.data);
-    } catch (err) {
-        res.status(500).json({ error: 'Failed to capture screenshot', details: err.message });
-    }
+    res.setHeader('Content-Type', 'image/png');
+    res.setHeader('Content-Disposition', 'attachment; filename="infographic-screenshot.png"');
+    res.send(screenshotBuffer);
+  } catch (err) {
+    res.status(500).send('Failed to take screenshot: ' + err.message);
+  } finally {
+    if (browser) await browser.close();
+  }
 });
 
 app.listen(PORT, () => {
-    console.log(`Screenshot backend running on http://localhost:${PORT}`);
+  console.log(`Server running at http://localhost:${PORT}`);
 });

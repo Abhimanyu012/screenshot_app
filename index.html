@@ -1,18 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Screenshot Webapp</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Infographic Screenshot App</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Screenshot Webapp</h1>
-        <button id="screenshotBtn">Take Screenshot</button>
-        <div id="screenshotResult"></div>
+  <div class="infographic-container">
+    <h1>Infographic Title</h1>
+    <div class="infographic-content">
+      <div class="info-block">
+        <h2>Section 1</h2>
+        <p>Some interesting data or facts here.</p>
+      </div>
+      <div class="info-block">
+        <h2>Section 2</h2>
+        <p>More data, charts, or visuals here.</p>
+      </div>
+      <div class="info-block">
+        <h2>Section 3</h2>
+        <p>Additional insights or highlights.</p>
+      </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-    <script src="script.js"></script>
+    <button id="screenshot-btn">Take Screenshot</button>
+  </div>
+  <script src="main.js"></script>
 </body>
 </html>
