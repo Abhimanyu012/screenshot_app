@@ -11,12 +11,12 @@ app.use(express.static(path.join(__dirname)));
 
 // Screenshot endpoint using Playwright
 app.get('/screenshot', async (req, res) => {
-  const url = `http://localhost:${PORT}`;
   let browser;
   try {
     browser = await chromium.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
     const page = await browser.newPage();
-    await page.goto(url, { waitUntil: 'networkidle' });
+    // Load the HTML file directly from disk for reliability in cloud environments
+    await page.goto('file://' + path.join(__dirname, 'index.html'));
     const element = await page.$('.infographic-container');
     let screenshotBuffer;
     if (element) {
